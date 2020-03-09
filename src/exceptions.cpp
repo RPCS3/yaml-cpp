@@ -17,4 +17,24 @@ BadPushback::~BadPushback() YAML_CPP_NOEXCEPT = default;
 BadInsert::~BadInsert() YAML_CPP_NOEXCEPT = default;
 EmitterException::~EmitterException() YAML_CPP_NOEXCEPT = default;
 BadFile::~BadFile() YAML_CPP_NOEXCEPT = default;
+
+[[noreturn]] void throw_bad_subscript()
+{
+	throw BadSubscript(0);
+}
+
+[[noreturn]] void throw_invalid_node(const std::string& key)
+{
+	throw InvalidNode(key);
+}
+
+[[noreturn]] void throw_bad_conversion(const YAML::Mark& mark)
+{
+	throw BadConversion(mark);
+}
+
+[[noreturn]] void throw_bad_insert()
+{
+	throw BadInsert();
+}
 }

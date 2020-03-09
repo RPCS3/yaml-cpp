@@ -12,6 +12,7 @@
 #include <type_traits>
 
 namespace YAML {
+[[noreturn]] void throw_bad_subscript();
 namespace detail {
 template <typename Key, typename Enable = void>
 struct get_idx {
@@ -122,7 +123,7 @@ inline node* node_data::get(const Key& key,
         return pNode;
       return nullptr;
     case NodeType::Scalar:
-      throw BadSubscript(key);
+      throw_bad_subscript();
   }
 
   for (node_map::const_iterator it = m_map.begin(); it != m_map.end(); ++it) {
@@ -150,7 +151,7 @@ inline node& node_data::get(const Key& key, shared_memory_holder pMemory) {
       convert_to_map(pMemory);
       break;
     case NodeType::Scalar:
-      throw BadSubscript(key);
+      throw_bad_subscript();
   }
 
   for (node_map::const_iterator it = m_map.begin(); it != m_map.end(); ++it) {
@@ -190,6 +191,8 @@ inline bool node_data::remove(const Key& key, shared_memory_holder pMemory) {
   return false;
 }
 
+[[nodiscard]] void throw_bad_insert();
+
 // map
 template <typename Key, typename Value>
 inline void node_data::force_insert(const Key& key, const Value& value,
@@ -203,7 +206,7 @@ inline void node_data::force_insert(const Key& key, const Value& value,
       convert_to_map(pMemory);
       break;
     case NodeType::Scalar:
-      throw BadInsert();
+      throw_bad_insert();
   }
 
   node& k = convert_to_node(key, pMemory);

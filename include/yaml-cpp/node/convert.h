@@ -90,6 +90,33 @@ struct convert<_Null> {
   }
 };
 
+template <typename T>
+bool careful_isnan(T arg)
+{
+	if constexpr (std::is_floating_point_v<T>)
+		return std::isnan(arg);
+	else
+		return false;
+}
+
+template <typename T>
+bool careful_isinf(T arg)
+{
+	if constexpr (std::is_floating_point_v<T>)
+		return std::isinf(arg);
+	else
+		return false;
+}
+
+template <typename T>
+bool careful_sign(T arg)
+{
+	if constexpr (std::is_floating_point_v<T>)
+		return std::signbit(arg);
+	else
+		return false;
+}
+
 #define YAML_DEFINE_CONVERT_STREAMABLE(type, negative_op)                  \
   template <>                                                              \
   struct convert<type> {                                                   \
@@ -97,10 +124,10 @@ struct convert<_Null> {
       std::stringstream stream;                                            \
       stream.precision(std::numeric_limits<type>::max_digits10);           \
       if (std::is_floating_point<type>::value) {                           \
-        if (std::isnan(rhs)) {                                             \
+        if (careful_isnan(rhs)) {                                          \
           stream << ".nan";                                                \
-        } else if (std::isinf(rhs)) {                                      \
-          if (std::signbit(rhs)) {                                         \
+        } else if (careful_isinf(rhs)) {                                   \
+          if (careful_sign(rhs)) {                                         \
             stream << "-.inf";                                             \
           } else {                                                         \
             stream << ".inf";                                              \

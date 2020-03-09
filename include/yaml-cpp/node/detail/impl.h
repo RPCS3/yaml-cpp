@@ -14,6 +14,9 @@
 #include <type_traits>
 
 namespace YAML {
+[[noreturn]] extern void throw_bad_subscript(const YAML::Mark& mark);
+[[noreturn]] extern void throw_bad_insert();
+
 namespace detail {
 template <typename Key, typename Enable = void>
 struct get_idx {
@@ -128,7 +131,7 @@ inline node* node_data::get(const Key& key,
         return pNode;
       return nullptr;
     case NodeType::Scalar:
-      throw BadSubscript(m_mark, key);
+      throw_bad_subscript(m_mark);
   }
 
   auto it = std::find_if(m_map.begin(), m_map.end(), [&](const kv_pair m) {
@@ -154,7 +157,7 @@ inline node& node_data::get(const Key& key, shared_memory_holder pMemory) {
       convert_to_map(pMemory);
       break;
     case NodeType::Scalar:
-      throw BadSubscript(m_mark, key);
+      throw_bad_subscript(m_mark);
   }
 
   auto it = std::find_if(m_map.begin(), m_map.end(), [&](const kv_pair m) {
@@ -213,7 +216,7 @@ inline void node_data::force_insert(const Key& key, const Value& value,
       convert_to_map(pMemory);
       break;
     case NodeType::Scalar:
-      throw BadInsert();
+      throw_bad_insert();
   }
 
   node& k = convert_to_node(key, pMemory);
